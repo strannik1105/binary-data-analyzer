@@ -1,16 +1,15 @@
 #ifndef CORE_LIST_H
 #define CORE_LIST_H
 
-#define DEFINE_LIST(T)      \
-  struct __Node##T {        \
-    T value;                \
-    struct __Node##T *next; \
-  };                        \
-                            \
-  struct __List##T {        \
-    struct __Node##T *root; \
-  }
+typedef struct List List;
 
-#define LIST(T) struct __List##T
+typedef struct ListApi {
+  struct List *(*make_list)();
+  void (*delete_list)(List *lst);
+  void (*append)(List *lst, void *value);
+  void *(*pop)(List *lst);
+} ListApi;
+
+ListApi get_list_api();
 
 #endif

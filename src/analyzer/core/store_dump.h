@@ -1,11 +1,15 @@
 #ifndef CORE_STORE_DUMP_H
 #define CORE_STORE_DUMP_H
 
+#include <stdio.h>
+
 #include "list.h"
-#include "stat_data.h"
 
-DEFINE_LIST(StatData);
-
-// void store_dump(LIST(StatData) data);
+/*
+@brief сохранение массива StatData в файл
+@param data список объектов StatData
+@param stream файловы поток для вывода
+*/
+void store_dump(List *data, FILE *stream);
 
 #endif

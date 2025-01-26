@@ -1,25 +1,33 @@
 #include <stdio.h>
 
+#include "core/list.h"
 #include "core/stat_data.h"
 
 int main() {
-  FILE *f;
-  f = fopen("t.txt", "w");
-  StatData obj;
-  obj.id = 1;
-  obj.count = 2;
-  obj.cost = 3.3;
-  obj.primary = 0;
-  obj.mode = 1;
-  serialize(obj, f);
-  fclose(f);
-  printf("success serialize\n");
+  StatData obj1;
+  obj1.id = 1;
+  obj1.count = 1;
+  obj1.cost = 1.1;
+  obj1.primary = 0;
+  obj1.mode = 1;
 
-  f = fopen("t.txt", "r");
-  struct OptionalStatData deserialized = deserialize(f);
-  printf("%ld;%d;%f;%u;%u;\n", obj.id, obj.count, obj.cost, obj.primary,
-         obj.mode);
+  StatData obj2;
+  obj2.id = 2;
+  obj2.count = 2;
+  obj2.cost = 2.2;
+  obj2.primary = 0;
+  obj2.mode = 1;
 
-  fclose(f);
+  ListApi api = get_list_api();
+  List *lst = api.make_list();
+  printf("append1\n");
+  api.append(lst, &obj1);
+  printf("append2\n");
+  api.append(lst, &obj2);
+
+  printf("pop1: %ld\n", ((StatData *)api.pop(lst))->id);
+  printf("pop2: %ld\n", ((StatData *)api.pop(lst))->id);
+
+  api.delete_list(lst);
   return 0;
 }
