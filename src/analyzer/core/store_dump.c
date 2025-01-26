@@ -2,8 +2,4 @@
 
 #include <stdio.h>
 
-// void store_dump(LIST(StatData) data)
-void store_dump(StatData* data)
-{
-    printf("store");
-}
+void store_dump(StatData* data) { printf("store"); }

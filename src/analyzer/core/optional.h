@@ -3,11 +3,10 @@
 
 #include <stdbool.h>
 
-#define OPTIONAL(T)     \
-struct Optional##T      \
-{                       \
-    bool has_value;     \
-    T value;            \
-}                       \
+#define OPTIONAL(T)    \
+  struct Optional##T { \
+    T value;           \
+    bool has_value;    \
+  }
 
 #endif
