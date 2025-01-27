@@ -18,13 +18,13 @@ typedef struct StatData {
 @param obj объект StatData
 @param stream файловый поток в который будет записан объект
 */
-void serialize(const StatData obj, FILE *stream);
+char *serialize(const StatData *obj);
 
 /*
 @brief десериализация StatData
 @param stream файловый поток из которого будет создан объект
 @return объект StatDatas
 */
-OPTIONAL(StatData) deserialize(FILE *stream);
+StatData *deserialize(char *buffer);
 
 #endif
