@@ -3,10 +3,10 @@
 
 #include <stdbool.h>
 
-/*
-@brief аналог std::optional из C++
-@param T тип значения
-*/
+/**
+ * @brief аналог std::optional из C++
+ * @param T тип значения
+ */
 #define OPTIONAL(T)    \
   struct Optional##T { \
     T value;           \

@@ -11,6 +11,7 @@ typedef struct ListNode ListNode;
 
 struct List {
   ListNode *head;
+  size_t size;
 };
 
 /*
@@ -27,6 +28,7 @@ static ListNode *make_node(void *value, ListNode *prev) {
 static List *make_list() {
   List *lst = (List *)malloc(sizeof(List));
   lst->head = NULL;
+  lst->size = 0;
 
   return lst;
 }
@@ -46,6 +48,7 @@ static void delete_list(List *lst) {
 }
 
 static void append(List *lst, void *value) {
+  lst->size += 1;
   if (lst->head == NULL) {
     lst->head = make_node(value, NULL);
     return;
@@ -62,9 +65,27 @@ static void *pop(List *lst) {
   ListNode *prev = lst->head->prev;
   free(lst->head);
   lst->head = prev;
+  lst->size -= 1;
 
   return value;
 }
+
+static bool contains(List *lst, void *value,
+                     bool (*comparator)(void *value1, void *value2)) {
+  if (lst->head == NULL) return false;
+
+  ListNode *cur = lst->head;
+  while (cur != NULL) {
+    if (comparator(cur->value, value)) {
+      return true;
+    }
+    cur = cur->prev;
+  }
+
+  return false;
+}
+
+static size_t size(List *lst) { return lst->size; }
 
 ListApi get_list_api() {
   ListApi api;
@@ -72,6 +93,8 @@ ListApi get_list_api() {
   api.delete_list = delete_list;
   api.append = append;
   api.pop = pop;
+  api.contains = contains;
+  api.size = size;
 
   return api;
 }

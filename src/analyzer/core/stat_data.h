@@ -1,10 +1,6 @@
 #ifndef CORE_STAT_DATA_H
 #define CORE_STAT_DATA_H
 
-#include <stdio.h>
-
-#include "optional.h"
-
 typedef struct StatData {
   long id;
   int count;
@@ -13,18 +9,18 @@ typedef struct StatData {
   unsigned int mode : 3;
 } StatData;
 
-/*
-@brief сериализация StatData
-@param obj объект StatData
-@param stream файловый поток в который будет записан объект
-*/
+/**
+ * @brief сериализация StatData
+ * @param obj объект StatData
+ * @param stream файловый поток в который будет записан объект
+ */
 char *serialize(const StatData *obj);
 
-/*
-@brief десериализация StatData
-@param stream файловый поток из которого будет создан объект
-@return объект StatDatas
-*/
+/**
+ * @brief десериализация StatData
+ * @param stream файловый поток из которого будет создан объект
+ * @return объект StatDatas
+ */
 StatData *deserialize(char *buffer);
 
 #endif

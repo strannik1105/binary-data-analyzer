@@ -6,11 +6,11 @@
 typedef struct List List;
 
 typedef struct DumpApi {
-  /*
-  @brief сохранение массива StatData в файл
-  @param data список объектов StatData
-  @param stream файловы поток для вывода
-  */
+  /**
+   * @brief сохранение массива StatData в файл
+   * @param data список объектов StatData
+   * @param stream файловы поток для вывода
+   */
   void (*store_dump)(struct List *data, FILE *stream);
   List *(*load_dump)(FILE *stream);
 } DumpApi;
