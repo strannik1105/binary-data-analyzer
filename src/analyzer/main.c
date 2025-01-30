@@ -66,13 +66,11 @@ int main() {
 
   List *joined_lst = processing_api.join_dump(lst1, lst2);
   processing_api.sort_dump(joined_lst);
-  StatData *cur = list_api.pop(joined_lst);
 
-  printf("sorted:\n");
-  while (cur != NULL) {
-    printf(" %ld %f\n", cur->id, cur->cost);
-    cur = list_api.pop(joined_lst);
-  }
+  f = fopen("result.txt", "w");
+  dump_api.store_dump(joined_lst, f);
+  fclose(f);
+
   list_api.delete_list(joined_lst);
 
   return 0;

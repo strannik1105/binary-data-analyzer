@@ -4,38 +4,23 @@
 #include <stdlib.h>
 
 char *serialize(const StatData *obj) {
-  char *buffer = (char *)malloc(sizeof("%ld;%d;%f;%u\n"));
-  union {
-    struct {
-      unsigned int primary : 1;
-      unsigned int mode : 3;
-    };
-    unsigned int value;
-  } bf;
-  bf.primary = obj->primary;
-  bf.mode = obj->mode;
+  char *buffer = (char *)malloc(100);
 
-  sprintf(buffer, "%ld;%d;%f;%u", obj->id, obj->count, obj->cost, bf.value);
+  sprintf(buffer, "%ld;%d;%f;%u;%u;", obj->id, obj->count, obj->cost,
+          obj->primary, obj->mode);
   return buffer;
 }
 
 StatData *deserialize(char *buffer) {
-  union {
-    struct {
-      unsigned int primary : 1;
-      unsigned int mode : 3;
-    };
-    unsigned int value;
-  } bf;
-
-  // struct OptionalStatData result;
   StatData *obj = malloc(sizeof(StatData));
+  unsigned int primary, mode;
 
-  if (!sscanf(buffer, "%ld;%d;%f;%u", &obj->id, &obj->count, &obj->cost,
-              &bf.value))
+  if (!sscanf(buffer, "%ld %d %f %u %u", &obj->id, &obj->count, &obj->cost,
+              &primary, &mode))
     return NULL;
 
-  obj->primary = bf.primary;
-  obj->mode = bf.mode;
+  obj->primary = primary;
+  obj->mode = mode;
+
   return obj;
 }
