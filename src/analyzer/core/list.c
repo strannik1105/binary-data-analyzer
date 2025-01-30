@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include "stat_data.h"
+
 struct ListNode {
   void *value;
   struct ListNode *prev;
@@ -58,6 +60,29 @@ static void append(List *lst, void *value) {
   lst->head = new;
 }
 
+void swap(ListNode *a, ListNode *b) {
+  StatData *temp = a->value;
+  a->value = b->value;
+  b->value = temp;
+}
+
+static void sort_list(List *list, bool (*gt)(void *value1, void *value2)) {
+  if (!list || !list->head || !list->head->prev) return;
+
+  bool swapped;
+  do {
+    swapped = false;
+    ListNode *current = list->head;
+    while (current && current->prev) {
+      if (gt(current->value, current->prev->value)) {
+        swap(current, current->prev);
+        swapped = 1;
+      }
+      current = current->prev;
+    }
+  } while (swapped);
+}
+
 static void *pop(List *lst) {
   if (lst->head == NULL) return NULL;
 
@@ -92,6 +117,7 @@ ListApi get_list_api() {
   api.make_list = make_list;
   api.delete_list = delete_list;
   api.append = append;
+  api.sort_list = sort_list;
   api.pop = pop;
   api.contains = contains;
   api.size = size;

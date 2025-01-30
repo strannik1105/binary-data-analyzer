@@ -19,6 +19,7 @@ typedef struct ListApi {
   struct List *(*make_list)();
   void (*delete_list)(List *lst);
   void (*append)(List *lst, void *value);
+  void (*sort_list)(struct List *list, bool (*gt)(void *value1, void *value2));
   void *(*pop)(List *lst);
   bool (*contains)(List *lst, void *value,
                    bool (*comparator)(void *value1, void *value2));

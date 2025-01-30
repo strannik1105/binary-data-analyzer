@@ -4,7 +4,7 @@
 #include "core/map.h"
 #include "core/stat_data.h"
 
-List *join_list(List *list1, List *list2) {
+static List *join_dump(List *list1, List *list2) {
   ListApi lst_api = get_list_api();
   MapApi map_api = get_map_api();
 
@@ -36,9 +36,21 @@ List *join_list(List *list1, List *list2) {
   return map_api.values(map);
 }
 
+static bool gt(void *val1, void *val2) {
+  if (((StatData *)val1)->cost > ((StatData *)val2)->cost) return true;
+  return false;
+}
+
+static List *sort_dump(List *lst) {
+  ListApi api = get_list_api();
+  api.sort_list(lst, gt);
+  return lst;
+}
+
 ProcessingApi get_processing_api() {
   ProcessingApi api;
-  api.join_list = join_list;
+  api.join_dump = join_dump;
+  api.sort_dump = sort_dump;
 
   return api;
 }

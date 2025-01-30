@@ -64,14 +64,16 @@ int main() {
   list_api.append(lst2, &obj5);
   list_api.append(lst2, &obj6);
 
-  List *joined_lst = processing_api.join_list(lst1, lst2);
+  List *joined_lst = processing_api.join_dump(lst1, lst2);
+  processing_api.sort_dump(joined_lst);
   StatData *cur = list_api.pop(joined_lst);
-  if (cur == NULL) printf("NNNNNN %ld\n", list_api.size(joined_lst));
+
+  printf("sorted:\n");
   while (cur != NULL) {
-    printf("iter123");
     printf(" %ld %f\n", cur->id, cur->cost);
     cur = list_api.pop(joined_lst);
   }
+  list_api.delete_list(joined_lst);
 
   return 0;
 }
