@@ -1,4 +1,5 @@
 add_library(Core SHARED
+    cmd_parser.c
     dump.c
     list.c
     map.c

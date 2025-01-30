@@ -15,7 +15,7 @@ StatData *deserialize(char *buffer) {
   StatData *obj = malloc(sizeof(StatData));
   unsigned int primary, mode;
 
-  if (!sscanf(buffer, "%ld %d %f %u %u", &obj->id, &obj->count, &obj->cost,
+  if (!sscanf(buffer, "%ld;%d;%f;%u;%u;", &obj->id, &obj->count, &obj->cost,
               &primary, &mode))
     return NULL;
 
