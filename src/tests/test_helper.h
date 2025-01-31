@@ -9,9 +9,9 @@ typedef struct StatData StatData;
 List *to_list(const StatData *data, size_t size);
 
 typedef struct Case {
-    StatData *dump1;
-    StatData *dump2;
-    StatData *result;
+  StatData *dump1;
+  StatData *dump2;
+  StatData *result;
 } Case;
 
 #endif

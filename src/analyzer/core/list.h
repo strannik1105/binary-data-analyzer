@@ -25,7 +25,7 @@ typedef struct ListApi {
                    bool (*comparator)(void *value1, void *value2));
   size_t (*size)(List *lst);
   bool (*compare)(List *lst1, List *lst2,
-                          bool (*comparator)(const void *value1, const void *value2));
+                  bool (*comparator)(const void *value1, const void *value2));
 } ListApi;
 
 ListApi get_list_api();

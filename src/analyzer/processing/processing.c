@@ -12,7 +12,8 @@ static List *join_dump(List *list1, List *list2) {
 
   if (!list1 || !list2) return NULL;  // Проверка входных параметров
 
-  Map *map = map_api.create_map(lst_api.size(list1) + lst_api.size(list2) + 1, NULL);
+  Map *map =
+      map_api.create_map(lst_api.size(list1) + lst_api.size(list2) + 1, NULL);
   if (!map) return NULL;
 
   List *result = lst_api.make_list();

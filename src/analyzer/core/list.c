@@ -113,7 +113,8 @@ static bool contains(List *lst, void *value,
 static size_t size(List *lst) { return lst->size; }
 
 static bool compare(List *lst1, List *lst2,
-                          bool (*comparator)(const void *value1, const void *value2)) {
+                    bool (*comparator)(const void *value1,
+                                       const void *value2)) {
   if (lst1->size != lst2->size) return false;
 
   ListNode *cur1 = lst1->head;
@@ -143,4 +144,3 @@ ListApi get_list_api() {
 
   return api;
 }
-
