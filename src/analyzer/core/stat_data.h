@@ -1,6 +1,8 @@
 #ifndef CORE_STAT_DATA_H
 #define CORE_STAT_DATA_H
 
+#include <stdbool.h>
+
 typedef struct StatData {
   long id;
   int count;
@@ -22,5 +24,7 @@ char *serialize(const StatData *obj);
  * @return объект StatDatas
  */
 StatData *deserialize(char *buffer);
+
+bool eq(const void *obj1, const void *obj2);
 
 #endif

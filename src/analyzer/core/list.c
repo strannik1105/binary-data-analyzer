@@ -112,6 +112,24 @@ static bool contains(List *lst, void *value,
 
 static size_t size(List *lst) { return lst->size; }
 
+static bool compare(List *lst1, List *lst2,
+                          bool (*comparator)(const void *value1, const void *value2)) {
+  if (lst1->size != lst2->size) return false;
+
+  ListNode *cur1 = lst1->head;
+  ListNode *cur2 = lst2->head;
+
+  while (cur1 != NULL && cur2 != NULL) {
+    if (!comparator(cur1->value, cur2->value)) {
+      return false;
+    }
+    cur1 = cur1->prev;
+    cur2 = cur2->prev;
+  }
+
+  return true;
+}
+
 ListApi get_list_api() {
   ListApi api;
   api.make_list = make_list;
@@ -121,6 +139,7 @@ ListApi get_list_api() {
   api.pop = pop;
   api.contains = contains;
   api.size = size;
+  api.compare = compare;
 
   return api;
 }
