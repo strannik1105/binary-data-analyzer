@@ -7,3 +7,4 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 add_subdirectory(analyzer)
+add_subdirectory(tests)
