@@ -1,76 +1,168 @@
 #include "map.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "list.h"
 
 struct KeyType {
   long payload;
+  long hashed;
 };
 
-struct Map {
-  void **values;
-  List *keys;
-  long size;
+typedef struct KeyValue {
+  KeyType key;
+  void *value;
+} KeyValue;
 
+struct Map {
+  List **buckets;
+  long size;
   long (*hash)(KeyType *key, long size);
 };
 
-static long def_hash(KeyType *key, long size) { return key->payload; }
+static long def_hash(KeyType *key, long size) {
+  const long PRIME = 11400714819323198549ULL;
+  long hash = key->payload;
+
+  hash ^= hash >> 33;
+  hash *= PRIME;
+  hash ^= hash >> 29;
+  hash *= PRIME;
+  hash ^= hash >> 32;
+
+  return (hash % size);
+}
 
 static Map *create_map(long size, long (*hash)(KeyType *key, long size)) {
   Map *map = (Map *)malloc(sizeof(Map));
-  map->values = malloc(sizeof(void *) * size);
+  if (!map) return NULL;
+
+  ListApi api = get_list_api();
+  map->buckets = (List **)malloc(sizeof(List *) * size);
+  if (!map->buckets) {
+    free(map);
+    return NULL;
+  }
+
+  for (long i = 0; i < size; i++) {
+    map->buckets[i] = api.make_list();
+    if (!map->buckets[i]) {
+      // Если создание списка провалилось, очищаем уже созданные
+      for (long j = 0; j < i; j++) {
+        api.delete_list(map->buckets[j]);
+      }
+      free(map->buckets);
+      free(map);
+      return NULL;
+    }
+  }
+
   map->size = size;
-  map->keys = get_list_api().make_list();
-  if (hash == NULL)
-    map->hash = def_hash;
-  else
-    map->hash = hash;
+  map->hash = hash ? hash : def_hash;
   return map;
 }
 
-static void insert(Map *map, long key, void *value) {
-  ListApi api = get_list_api();
-  KeyType *_key = malloc(sizeof(KeyType));
-  _key->payload = key;
-
-  long hashed_key = map->hash(_key, map->size);
-
-  api.append(map->keys, _key);
-  map->values[hashed_key] = value;
+static bool key_comparator(void *value1, void *value2) {
+  KeyValue *kv = (KeyValue *)value1;
+  KeyType *key = (KeyType *)value2;
+  return kv->key.payload == key->payload;
 }
 
-static bool comparator(void *value1, void *value2) {
-  if (*(int *)value1 == *(int *)value2) return true;
-  return false;
+static void insert(Map *map, long key, void *value) {
+  if (!map) return;
+
+  ListApi api = get_list_api();
+  KeyType new_key = {key, map->hash(&(KeyType){key}, map->size)};
+  List *bucket = map->buckets[new_key.hashed];
+
+  // Проверяем, есть ли уже такой ключ
+  if (api.contains(bucket, &new_key, key_comparator)) {
+    return;  // Не перезаписываем, если ключ уже есть
+  }
+
+  // Создаём новый элемент и добавляем в список
+  KeyValue *kv = (KeyValue *)malloc(sizeof(KeyValue));
+  if (!kv) return;
+
+  kv->key = new_key;
+  kv->value = value;
+  api.append(bucket, kv);
 }
 
 static void *get(Map *map, long key) {
+  if (!map) return NULL;
+
   ListApi api = get_list_api();
-  KeyType _key;
-  _key.payload = key;
+  KeyType search_key = {key, map->hash(&(KeyType){key}, map->size)};
+  List *bucket = map->buckets[search_key.hashed];
 
-  long hashed_key = map->hash(&_key, map->size);
+  List *temp = api.make_list();
+  void *found_value = NULL;
 
-  if (api.contains(map->keys, &hashed_key, comparator)) {
-    return map->values[hashed_key];
+  // Перебираем элементы списка и ищем нужный ключ
+  while (api.size(bucket) > 0) {
+    KeyValue *kv = (KeyValue *)api.pop(bucket);
+    if (kv->key.payload == key) {
+      found_value = kv->value;
+    }
+    api.append(temp, kv);
   }
-  return NULL;
+
+  // Восстанавливаем bucket
+  while (api.size(temp) > 0) {
+    api.append(bucket, api.pop(temp));
+  }
+
+  api.delete_list(temp);
+  return found_value;
 }
 
 static List *values(Map *map) {
-  ListApi api = get_list_api();
-  List *lst = api.make_list();
+  if (!map) return NULL;
 
-  KeyType *key = api.pop(map->keys);
-  while (key != NULL) {
-    api.append(lst, map->values[key->payload]);
-    key = api.pop(map->keys);
+  ListApi api = get_list_api();
+  List *result = api.make_list();
+  if (!result) return NULL;
+
+  for (long i = 0; i < map->size; i++) {
+    List *bucket = map->buckets[i];
+
+    List *temp = api.make_list();
+
+    while (api.size(bucket) > 0) {
+      KeyValue *kv = (KeyValue *)api.pop(bucket);
+      api.append(result, kv->value);
+      api.append(temp, kv);
+    }
+
+    // Восстанавливаем bucket
+    while (api.size(temp) > 0) {
+      api.append(bucket, api.pop(temp));
+    }
+
+    api.delete_list(temp);
   }
 
-  return lst;
+  return result;
+}
+
+static void delete_map(Map *map) {
+  if (!map) return;
+
+  ListApi api = get_list_api();
+  for (long i = 0; i < map->size; i++) {
+    List *bucket = map->buckets[i];
+    while (api.size(bucket) > 0) {
+      KeyValue *kv = (KeyValue *)api.pop(bucket);
+      free(kv);
+    }
+    api.delete_list(bucket);
+  }
+
+  free(map->buckets);
+  free(map);
 }
 
 MapApi get_map_api() {
@@ -79,6 +171,5 @@ MapApi get_map_api() {
   api.insert = insert;
   api.get = get;
   api.values = values;
-
   return api;
 }
