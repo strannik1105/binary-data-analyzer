@@ -6,20 +6,21 @@
 char *serialize(const StatData *obj) {
   char *buffer = (char *)malloc(100);
 
-  sprintf(buffer, "%ld;%d;%f;%u;%u;", obj->id, obj->count, obj->cost,
-          obj->primary, obj->mode);
+  sprintf(buffer, "%lx;%d;%f;%c;%x;", obj->id, obj->count, obj->cost,
+          obj->primary ? 'y' : 'n', obj->mode);
   return buffer;
 }
 
 StatData *deserialize(char *buffer) {
   StatData *obj = malloc(sizeof(StatData));
-  unsigned int primary, mode;
+  char primary;
+  unsigned int mode;
 
-  if (!sscanf(buffer, "%ld;%d;%f;%u;%u;", &obj->id, &obj->count, &obj->cost,
+  if (!sscanf(buffer, "%lx;%d;%f;%c;%x;", &obj->id, &obj->count, &obj->cost,
               &primary, &mode))
     return NULL;
 
-  obj->primary = primary;
+  obj->primary = (primary == 'y') ? 1 : 0;;
   obj->mode = mode;
 
   return obj;
