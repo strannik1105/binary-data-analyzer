@@ -28,3 +28,9 @@ Ex: ./binary-analyzer dump1.txt dump2.txt result.txt
 ```
 
 Вызов с `-h` позволяет вывести справку
+
+## Тесты
+
+Запуск тест кейсов осуществляется вызовом **utils/test.sh**
+
+Тест-кейсы описаны в **src/tests/cases.h**
